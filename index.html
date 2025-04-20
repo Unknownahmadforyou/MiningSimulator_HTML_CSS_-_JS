@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Mining Simulator</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fab fa-bitcoin"></i> Bitcoin Mining Simulator</h1>
+            <div class="theme-toggle">
+                <i class="fas fa-sun"></i>
+                <label class="switch">
+                    <input type="checkbox" id="theme-switch">
+                    <span class="slider"></span>
+                </label>
+                <i class="fas fa-moon"></i>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <div class="stats-panel">
+                <div class="stat-card">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <div class="stat-info">
+                        <span class="stat-label">Hashrate</span>
+                        <span class="stat-value" id="hashrate">0 H/s</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-coins"></i>
+                    <div class="stat-info">
+                        <span class="stat-label">Balance</span>
+                        <span class="stat-value" id="balance">0.00000000 BTC</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-cube"></i>
+                    <div class="stat-info">
+                        <span class="stat-label">Blocks Mined</span>
+                        <span class="stat-value" id="blocks-mined">0</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-clock"></i>
+                    <div class="stat-info">
+                        <span class="stat-label">Mining Time</span>
+                        <span class="stat-value" id="mining-time">00:00:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <div class="difficulty-control">
+                    <label for="difficulty">Mining Difficulty: <span id="difficulty-value">4</span></label>
+                    <input type="range" id="difficulty" min="1" max="6" value="4">
+                </div>
+                <div class="mining-controls">
+                    <button id="start-mining" class="btn primary">
+                        <i class="fas fa-play"></i> Start Mining
+                    </button>
+                    <button id="reset-blockchain" class="btn danger">
+                        <i class="fas fa-trash"></i> Reset Blockchain
+                    </button>
+                    <button id="profile-settings" class="btn secondary">
+                        <i class="fas fa-user-cog"></i> Profile Settings
+                    </button>
+                    <button id="withdraw" class="btn success">
+                        <i class="fas fa-money-bill-wave"></i> Withdraw
+                    </button>
+                </div>
+            </div>
+
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h3>Mining Performance</h3>
+                    <canvas id="mining-chart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Block Times</h3>
+                    <canvas id="block-time-chart"></canvas>
+                </div>
+            </div>
+
+            <div class="transaction-panel">
+                <h3>Create Transaction</h3>
+                <div class="transaction-form">
+                    <div class="form-group">
+                        <label for="sender">Sender</label>
+                        <input type="text" id="sender" placeholder="Sender" value="Alice">
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient">Recipient</label>
+                        <input type="text" id="recipient" placeholder="Recipient" value="Bob">
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Amount (BTC)</label>
+                        <input type="number" id="amount" placeholder="Amount" value="10">
+                    </div>
+                    <button id="add-transaction" class="btn secondary">
+                        <i class="fas fa-plus"></i> Add Transaction
+                    </button>
+                </div>
+                <div class="transaction-list">
+                    <h4>Pending Transactions</h4>
+                    <div id="transactions" class="transactions"></div>
+                </div>
+            </div>
+
+            <div class="blockchain-panel">
+                <h3>Blockchain Explorer</h3>
+                <div class="blockchain-controls">
+                    <button id="export-blockchain" class="btn secondary">
+                        <i class="fas fa-download"></i> Export Blockchain
+                    </button>
+                    <button id="import-blockchain" class="btn secondary">
+                        <i class="fas fa-upload"></i> Import Blockchain
+                    </button>
+                </div>
+                <div id="blockchain" class="blockchain"></div>
+            </div>
+
+            <!-- Add Referral System Panel -->
+            <div class="referral-panel">
+                <h3><i class="fab fa-bitcoin"></i> <span class="gradient-text">Refer & Earn</span></h3>
+                <div class="referral-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-star"></i>
+                        <div class="stat-info">
+                            <span class="stat-label">Reward Points</span>
+                            <span class="stat-value gradient-text" id="reward-points">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-user-plus"></i>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Referrals</span>
+                            <span class="stat-value gradient-text" id="total-referrals">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="referral-link-section">
+                    <h4 class="gradient-text">Your Referral Link</h4>
+                    <div class="referral-link-container">
+                        <input type="text" id="referral-link" readonly>
+                        <button id="copy-link" class="btn secondary">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+                <div class="rewards-section">
+                    <h4 class="gradient-text">Available Rewards</h4>
+                    <div class="rewards-list" id="rewards-list">
+                        <div class="reward-item">
+                            <div class="reward-info">
+                                <span class="reward-title">Extra Hashrate Boost (24h)</span>
+                                <span class="reward-points gradient-text">500 points</span>
+                            </div>
+                            <button class="btn primary claim-reward" data-reward="hashrate-boost">
+                                <i class="fas fa-bolt"></i> Claim
+                            </button>
+                        </div>
+                        <div class="reward-item">
+                            <div class="reward-info">
+                                <span class="reward-title">Difficulty Reduction (1h)</span>
+                                <span class="reward-points gradient-text">1000 points</span>
+                            </div>
+                            <button class="btn primary claim-reward" data-reward="difficulty-reduction">
+                                <i class="fas fa-tachometer-alt"></i> Claim
+                            </button>
+                        </div>
+                        <div class="reward-item">
+                            <div class="reward-info">
+                                <span class="reward-title">Instant BTC Bonus</span>
+                                <span class="reward-points gradient-text">2500 points</span>
+                            </div>
+                            <button class="btn primary claim-reward" data-reward="btc-bonus">
+                                <i class="fab fa-bitcoin"></i> Claim
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="referral-history">
+                    <h4 class="gradient-text">Recent Referral Activity</h4>
+                    <div id="referral-activity" class="activity-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Referral Info Modal -->
+    <div id="referral-modal" class="modal">
+        <div class="modal-content">
+            <h2>Referral Program</h2>
+            <div class="referral-info">
+                <h3>How it Works</h3>
+                <ul>
+                    <li>Share your unique referral link with friends</li>
+                    <li>Earn 100 points when they sign up</li>
+                    <li>Get 10% of their mining rewards as bonus points</li>
+                    <li>Redeem points for valuable rewards</li>
+                </ul>
+                <div class="referral-tiers">
+                    <h3>Referral Tiers</h3>
+                    <div class="tier">
+                        <span class="tier-name">Bronze (0-5 referrals)</span>
+                        <span class="tier-bonus">10% bonus points</span>
+                    </div>
+                    <div class="tier">
+                        <span class="tier-name">Silver (6-15 referrals)</span>
+                        <span class="tier-bonus">15% bonus points</span>
+                    </div>
+                    <div class="tier">
+                        <span class="tier-name">Gold (16+ referrals)</span>
+                        <span class="tier-bonus">20% bonus points</span>
+                    </div>
+                </div>
+            </div>
+            <button class="btn primary" id="close-referral-info">Got it!</button>
+        </div>
+    </div>
+
+    <!-- Add Profile Settings Modal -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <h2>Profile Settings</h2>
+            <form id="profile-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="wallet-address">Bitcoin Wallet Address</label>
+                    <input type="text" id="wallet-address" required>
+                </div>
+                <div class="form-group">
+                    <label for="mining-preference">Mining Preference</label>
+                    <select id="mining-preference">
+                        <option value="cpu">CPU Mining</option>
+                        <option value="gpu">GPU Mining</option>
+                        <option value="both">Both CPU & GPU</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="notification">Notifications</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="notification" checked>
+                        <span class="slider"></span>
+                    </div>
+                </div>
+                <button type="submit" class="btn primary">Save Settings</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Withdrawal Modal -->
+    <div id="withdraw-modal" class="modal">
+        <div class="modal-content">
+            <h2>Withdraw Bitcoin</h2>
+            <form id="withdraw-form">
+                <div class="form-group">
+                    <label for="withdraw-amount">Amount (BTC)</label>
+                    <input type="number" id="withdraw-amount" step="0.00000001" min="0.00000001" required>
+                    <small class="balance-info">Available Balance: <span id="available-balance">0.00000000</span> BTC</small>
+                </div>
+                <div class="form-group">
+                    <label for="withdraw-address">Withdrawal Address</label>
+                    <input type="text" id="withdraw-address" required>
+                </div>
+                <div class="form-group">
+                    <label for="withdraw-fee">Network Fee</label>
+                    <select id="withdraw-fee">
+                        <option value="slow">Slow (0.0001 BTC)</option>
+                        <option value="medium" selected>Medium (0.0002 BTC)</option>
+                        <option value="fast">Fast (0.0003 BTC)</option>
+                    </select>
+                </div>
+                <div class="withdraw-summary">
+                    <p>Total Amount: <span id="total-amount">0.00000000</span> BTC</p>
+                    <p>Network Fee: <span id="network-fee">0.00020000</span> BTC</p>
+                    <p>You Will Receive: <span id="receive-amount">0.00000000</span> BTC</p>
+                </div>
+                <button type="submit" class="btn primary">Confirm Withdrawal</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html> 
